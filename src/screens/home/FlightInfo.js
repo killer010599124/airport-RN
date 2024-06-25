@@ -74,6 +74,48 @@ export default function FlightInfo() {
         navigation.replace(name);
     }
 
+    const [airport, setAirport] = useState("")
+    const [airline, setAirline] = useState("")
+    const [airNumber, setAirNumber] = useState("")
+
+    const [depIata, setDepIata] = useState("")
+    const [arrIata, setArrIata] = useState("")
+    const [status, setStatus] = useState("")
+
+    const onHandleSearch = () => {
+        console.log(airport);
+        console.log(airline);
+        console.log(airNumber);
+      
+        const myHeaders = new Headers();
+      
+        const requestOptions = {
+          method: "GET",
+          // headers : myHeaders,
+          redirect: "follow",
+        };
+      
+        const url = `https://app.goflightlabs.com/advanced-flights-schedules?access_key=eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI0IiwianRpIjoiMTJlYjU3OWM5MjlkNDFkODFmMGRjNjRhMDI1MjllNmU2NmMxNzNlOWNjZWU2Mjk4NTYwMWY3ZTFjMmNjNGUyY2I4ZTI4YWIzYTE0ZDQ0NDYiLCJpYXQiOjE3MTg5OTQxOTUsIm5iZiI6MTcxODk5NDE5NSwiZXhwIjoxNzUwNTMwMTk1LCJzdWIiOiIyMjcxOCIsInNjb3BlcyI6W119.F-1HqGEBQWXTqL-QcHBOtb0rZ1zc9MAucve3U7Qc0vUjxDPbW7sqAkRFpfmvF3YzASwZuY0K0i3glSpKjr1OXA&iataCode=${airport}&flight_iata=${airNumber}&airline_iata=${airline}`;
+      
+        fetch(url, requestOptions)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error ${response.status}`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data.data[0]);
+            const info = data.data[0]
+            setDepIata(info.dep_iata)
+            setArrIata(info.arr_iata)
+            setStatus(info.status)
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      };
+
 
     const navigationView = () => (
         <View style={[{ flex: 1, backgroundColor: Colors.active }]}>
@@ -577,6 +619,7 @@ export default function FlightInfo() {
             </ScrollView>
         </View>
     );
+
     return (
         <SafeAreaView style={[style.area, { backgroundColor: theme.bg, }]}>
             <DrawerLayoutAndroid
@@ -588,10 +631,10 @@ export default function FlightInfo() {
             >
                 <ScrollView style={{ marginBottom: 50 }}>
                     <TopHeader onDrawerToggle={handleDrawerToggle} drawerStatus={drawerStatus} />
-                    <Header/>
+                    <Header />
                     {/* <StatusBar translucent={true} backgroundColor="transparent" /> */}
                     <View style={[style.main, { backgroundColor: theme.bg, }]}>
-                        <View style={{ flexDirection: "row", justifyContent: "space-around"}}>
+                        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
                             <View>
                                 <Text
                                     style={{
@@ -599,10 +642,12 @@ export default function FlightInfo() {
                                         fontFamily: "Plus Jakarta Sans",
                                     }}
                                 >
-                                    {'Airline'}
+                                    {'Airport'}
                                 </Text>
                                 <View style={{ paddingTop: 2 }}>
                                     <TextInput
+                                        value={airport}
+                                        onChangeText={(text) => { setAirport(text) }}
                                         selectionColor={Colors.primary}
                                         placeholderTextColor={Colors.disable}
                                         style={[style.txtinput, { backgroundColor: theme.bg }]}
@@ -615,10 +660,12 @@ export default function FlightInfo() {
                                         color: theme.txt,
                                         fontFamily: "Plus Jakarta Sans",
                                     }}>
-                                    {'Time'}
+                                    {'Airline'}
                                 </Text>
                                 <View style={{ paddingTop: 2 }}>
                                     <TextInput
+                                        value={airline}
+                                        onChangeText={(text) => { setAirline(text) }}
                                         selectionColor={Colors.primary}
                                         placeholderTextColor={Colors.disable}
                                         style={[style.txtinput, { backgroundColor: theme.bg }]}
@@ -632,18 +679,20 @@ export default function FlightInfo() {
                                         fontFamily: "Plus Jakarta Sans",
                                     }}
                                 >
-                                    {'Status'}
+                                    {'Number'}
                                 </Text>
                                 <View style={{ paddingTop: 2 }}>
                                     <TextInput
+                                        value={airNumber}
+                                        onChangeText={(text) => { setAirNumber(text) }}
                                         selectionColor={Colors.primary}
                                         placeholderTextColor={Colors.disable}
                                         style={[style.txtinput, { backgroundColor: theme.bg }]}
                                     />
                                 </View>
                             </View>
-                            <View style={{paddingTop:20}}>
-                                <TouchableOpacity style={{ width: 70, }}>
+                            <View style={{ paddingTop: 20 }}>
+                                <TouchableOpacity style={{ width: 70, }} onPress={onHandleSearch}>
                                     <LinearGradient
                                         colors={['#0A8ED9', '#A0DAFB']}
                                         start={{ x: 0.5, y: 0.5 }}
@@ -714,10 +763,10 @@ export default function FlightInfo() {
                             </ImageBackground>
 
                             <View style={{ flex: 1, padding: 20, justifyContent: 'space-around' }}>
-                                <Text style={{ color: theme.txt }}>{'Flight Number: BA009'}</Text>
-                                <Text style={{ color: theme.txt }}>{'Departure Time: 23:00'}</Text>
-                                <Text style={{ color: theme.txt }}>{'Gate: E012'}</Text>
-                                <Text style={{ color: theme.txt }}>{'Status: Landed'}</Text>
+                                <Text style={{ color: theme.txt }}>Departure Airport: {depIata}</Text>
+                                <Text style={{ color: theme.txt }}>Arrival Airport : {arrIata}</Text>
+                                <Text style={{ color: theme.txt }}>Status : {status}</Text>
+                               
 
                             </View>
                         </View>

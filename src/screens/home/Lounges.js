@@ -729,6 +729,7 @@ export default function Lounges() {
             </ScrollView>
         </View>
     );
+    
     return (
         <SafeAreaView style={[style.area, { backgroundColor: theme.bg, }]}>
             <DrawerLayoutAndroid
